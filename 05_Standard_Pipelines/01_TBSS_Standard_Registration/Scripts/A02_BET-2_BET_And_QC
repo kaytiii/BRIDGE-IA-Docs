@@ -1,0 +1,52 @@
+#!/bin/bash
+
+#############################################
+#
+#	BET for TBSS  
+#	Created by Cliff Chan
+#	Modified by Corinne McGill, Kayti Keith
+#	11/16/20
+#      
+#############################################
+
+
+#### BET Input is the pathway of where b0 maps reside:
+
+export BET_pathway=/Path/to/study/Phase1/BETprocessing
+export output=/Path/to/study/Phase1/BETprocessing
+export qc_folder=/Path/to/study/BET_QC
+export ID_file=/Path/to/study/Scripts/IDs.txt
+
+SUBJ_IDs=$(cat $ID_file)
+
+#### For ID's with their Diffusion Maps, will only use BET on b0 map to generate mask, and then apply the mask to all other diffusion maps to mask out skull and extraneous particles.
+
+echo
+echo "The Following Script will run BET at specified fractional intensity threshold on the b0.nii and then create a mask to mask out extraneous skull/fragments on DKE maps."
+echo
+echo "Enter the BET fractional intensity threshold (default is 0.5, where smaller values give larger brain outline estimates):"
+echo
+read BET_number
+export BET_parameter=$BET_number 
+echo
+echo Now processing all IDs in dax dmean drad fa kax kmean krad wmm_awf wmm_da wmm_de_ax wmm_de_rad ...
+
+echo
+for ID in $SUBJ_IDs ; do
+  bet $BET_pathway/${ID}_b0.nii $BET_pathway/bet_${BET_parameter}_${ID}_b0.nii -f $BET_parameter -m
+  echo BET processing completed for ${ID} at f = ${BET_parameter} .
+done
+
+echo
+for metrics in dax dmean drad fa kax kmean krad wmm_awf wmm_da wmm_de_ax wmm_de_rad wmm_tort ; do
+  for ID in $SUBJ_IDs ; do
+    fslmaths $BET_pathway/${ID}_${metrics}.nii -mas $BET_pathway/bet_${BET_parameter}_${ID}_b0_mask $output/bet_${BET_parameter}_${ID}_${metrics}
+    echo BET processing completed for ${ID} ${metrics} at f = ${BET_parameter} .
+  done
+done
+
+mkdir $qc_folder
+cp $output/bet*b0* $qc_folder
+rm $qc_folder/*mask*
+fslmerge -t 4d_bet_b0.nii.gz $qc_folder/*
+gunzip $qc_folder/*nii.gz

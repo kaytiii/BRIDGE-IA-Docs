@@ -1,0 +1,17 @@
+#############################################
+#
+#	TBSS 4 Prestats DKI
+#	Created by Corinne McGill
+#	Modified by Kayti Keith
+#	11/10/20
+#      
+#############################################
+
+# BL FU
+export input=/Users/kayti/Desktop/Projects/MIND/MIND_DTITK_allBL/03_Analysis/03_TBSS/Phase1/DKI/fa
+
+cd $input
+tbss_4_prestats 0.2
+
+cd $input/stats
+gunzip *nii.gz

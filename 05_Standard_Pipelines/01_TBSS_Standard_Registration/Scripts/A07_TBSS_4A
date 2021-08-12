@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#############################################
+#
+#	TBSS 4 Prestats WMM
+#	Created by Corinne McGill
+#	Modified by Kayti Keith
+#	11/16/20
+#      
+#############################################
+
+
+#Pathways
+export input=/Path/to/study/Phase1/DKI/fa
+export output=/Path/to/study/Phase1/WMM/fa
+
+cp -R $input $output
+
+cd $output
+tbss_4_prestats 0.4
+echo tbss_4 complete
+
+cd $output/FA
+gunzip *nii.gz
+
+cd $output/stats
+gunzip *nii.gz

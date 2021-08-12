@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+last modification 2017-04-25
+All texts messages and labels in Cortical Normes Calculator
+DO NOT REPEAT TAGS
+Use « \n » (backslash - n) to trow a linefeed <- work only in windows.
+-->
+<calculateur>
+	<descriptions>
+		<title>
+			Normative Calculator - Potvin et al. NeuroImage
+		</title>
+		<description1>
+            Normative morphometric data calculator for FreeSurfer 5.3
+		</description1>
+		<description2>
+            The use of this worksheet or its derivatives needs to be in agreement with the content of the following publications:
+		</description2>
+		<authors>
+			Potvin et al. (2016). Normative data for subcortical regional volumes over the lifetime of the adult human brain. NeuroImage, 137, 9-20.
+Potvin et al. (2017). Normative morphometric data for cerebral cortical areas over the lifetime of the adult human brain. NeuroImage, (in press).
+Potvin et al. (2017). FreeSurfer cortical normative data for adults using Desikan-Killiany-Tourville and Ex vivo protocols. NeuroImage, 156, 43-64.
+		</authors>
+		<disclaimer>
+            The authors take no responsibility for the use of this script or its derivatives. Not for diagnostic purposes.
+		</disclaimer>
+		<fileentry>
+			Choose subjects information file (CSV)
+		</fileentry>
+		<folderentry>
+			Choose subjects directory
+		</folderentry>
+		<filebutton>
+			Choose CSV
+		</filebutton>
+		<folderbutton>
+			Choose Directory
+		</folderbutton>
+		<filelabel>
+			Subjects information CSV :
+		</filelabel>
+		<folderlabel>
+			Subjects Directory :
+		</folderlabel>
+		<execbutton>
+			Generate normative Z scores
+		</execbutton>
+		<execbutton_fin>
+			Saving Results ...
+		</execbutton_fin>
+		<radioDKT>
+			Desikan-Killiany-Tourville (DKT) cortical,
+Ex vivo, and default subcortical atlases
+		</radioDKT>
+		<radioDK>
+			Desikan-Killiany (DK) cortical,
+Ex vivo, and default subcortical atlases
+		</radioDK>
+		<rebutton>
+			Reset
+		</rebutton>
+		<demo>
+			Instructions
+		</demo>
+        <saveas>
+            Save As Results
+        </saveas>
+   		<titlereadme>
+			Normative Calculator - Instructions
+		</titlereadme>
+        <result>
+            Your file is
+        </result>
+        <noresult>
+            You clicked Cancel. re-Generate or Reset.
+        </noresult>
+	</descriptions>
+	<errors_warning>
+        <miss>
+		    File missing
+        </miss>
+        <windows>
+            Microsoft Windows is not support.
+        </windows>
+        <notdone>
+            Ended without completing calculations.
+        </notdone>
+        <unknown>
+            Unknown error.
+        </unknown>
+        <id>
+            Could not find an id column in your CSV file corresponding to each subject folder.
+        </id>
+        <ids>
+            Could not find an UNIQUE id column in your CSV file corresponding to each subject folder.
+        </ids>
+        <filefolder>
+            Error. Please choose a valid file and folder.
+        </filefolder>
+        <same>
+            Warning! Found same structure with a different value.
+        </same>
+        <nofolder>
+            Did not find any STATS folders.
+        </nofolder>
+        <none>
+            No column found for
+        </none>
+        <many>
+            More than one column for
+        </many>
+        <wrongCSV>
+            There is a problem with the necessary columns in the CSV. See Instructions.
+        </wrongCSV>
+	</errors_warning>
+    <help>
+        I need somebody
+    </help>
+</calculateur>

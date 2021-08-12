@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#############################################
+#
+#	File setup for TBSS  
+#	Kayti Keith 11/16/20
+#      
+#############################################
+
+
+#Pathways
+export input=/Path/to/study/Phase1/BETprocessing
+export output_DKI=/Path/to/study/Phase1/DKI
+export output_WMM=/Path/to/study/Phase1/WMM
+export ID_file=/Path/to/study/Scripts/IDs.txt
+mkdir $output_WMM
+mkdir $output_DKI
+
+SUBJ_IDs=$(cat $ID_file)
+
+for metric_DKI in fa dmean dax drad kmean kax krad ; do
+  mkdir $output_DKI/${metric_DKI}
+done
+
+for metric_WMM in wmm_awf wmm_da wmm_de_ax wmm_de_rad wmm_tort ; do
+  mkdir $output_WMM/${metric_WMM}
+done
+
+for ID in $SUBJ_IDs ; do
+  for metric_DKI in fa dmean dax drad kmean kax krad ; do
+    cp $input/bet_0.2_${ID}_${metric_DKI}.nii $output_DKI/${metric_DKI}/${ID}_fa.nii
+  done
+done
+
+for ID in $SUBJ_IDs ; do
+  for metric_WMM in wmm_awf wmm_da wmm_de_ax wmm_de_rad wmm_tort ; do
+    cp $input/bet_0.2_${ID}_${metric_WMM}.nii $output_WMM/${metric_WMM}/${ID}_fa.nii
+  done
+done

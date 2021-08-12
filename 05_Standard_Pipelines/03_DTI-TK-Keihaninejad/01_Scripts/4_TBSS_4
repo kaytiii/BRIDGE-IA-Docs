@@ -1,0 +1,20 @@
+#############################################
+#
+#	TBSS 4 Prestats WMM
+#	Created by Corinne McGill
+#	Modified by Kayti Keith
+#	11/10/20
+#      
+#############################################
+
+#BL FU
+export input=/Path/to/study/03_Analysis/03_TBSS/Phase1/DKI/fa
+export output=/Path/to/study/03_Analysis/03_TBSS/Phase1/WMM/fa
+
+cp -R $input $output
+
+cd $output
+tbss_4_prestats 0.4
+
+cd $output/stats
+gunzip *nii.gz

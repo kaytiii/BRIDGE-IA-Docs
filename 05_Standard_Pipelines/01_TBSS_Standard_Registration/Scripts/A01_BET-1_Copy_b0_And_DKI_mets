@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#############################################
+#
+#  File setup for BET for TBSS  
+#  Kayti Keith  11/16/20
+#      
+#############################################
+
+
+#Pathways
+export input=/Path/to/study/DKE #path to DKE outputs
+export output=/Path/to/study/Phase1/BETprocessing #where TBSS processing will take place
+export ID_file=/Path/to/study/Scripts/IDs.txt #premade ID file; should be a vertical list of IDs in order
+mkdir $output
+
+SUBJ_IDs=$(cat $ID_file)
+
+#B0
+for ID in $SUBJ_IDs ; do
+  cp $input/${ID}/${ID}_B0.nii $output/${ID}_b0.nii
+done
+
+#DKI
+for metrics in dax dmean drad fa kax kmean krad wmm_awf wmm_da wmm_de_ax wmm_de_rad wmm_tort ; do
+  for ID in $SUBJ_IDs ; do
+    cp $input/${ID}/${ID}_${metrics}.nii $output/${ID}_${metrics}.nii
+  done
+done

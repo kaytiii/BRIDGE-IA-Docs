@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#############################################
+#
+#	TBSS non-FA DKI
+#	Created by Corinne McGill
+#	Modified by Kayti Keith
+#	11/16/20
+#      
+#############################################
+
+
+#Pathways
+export preinput=/Path/to/study/Phase1/DKI/fa
+export input=/Path/to/study/Phase1/DKI/fa_dlt
+export output=/Path/to/study/Phase1/DKI
+
+#### Move files from fa folder to DKI folder
+mv $preinput $input
+mv $input/FA $output/FA
+mv $input/stats $output/stats
+mv $input/origdata $output/origdata
+rm -R $input
+
+#### run tbss_non_fa
+cd $output
+
+tbss_non_FA dax
+tbss_non_FA dmean
+tbss_non_FA drad
+tbss_non_FA kax
+tbss_non_FA kmean
+tbss_non_FA krad
+
+cd $output/stats
+gunzip *nii.gz

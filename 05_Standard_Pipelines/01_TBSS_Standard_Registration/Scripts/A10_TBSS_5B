@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#############################################
+#
+#	TBSS non-FA WMM
+#	Created by Corinne McGill
+#	Modified by Kayti Keith
+#	11/16/20
+#      
+#############################################
+
+
+#Pathways
+export preinput=/Path/to/study/Phase1/WMM/fa
+export input=/Path/to/study/Phase1/WMM/fa_dlt
+export output=/Path/to/study/Phase1/WMM
+
+#### Move files from fa folder to WMM folder
+mv $preinput $input
+mv $input/FA $output/FA
+mv $input/stats $output/stats
+mv $input/origdata $output/origdata
+rm -R $input
+
+#### run tbss_non_fa
+cd $output
+
+tbss_non_FA wmm_awf
+tbss_non_FA wmm_da
+tbss_non_FA wmm_de_ax
+tbss_non_FA wmm_de_rad
+tbss_non_FA wmm_tort
+
+cd $output/stats
+gunzip *nii.gz

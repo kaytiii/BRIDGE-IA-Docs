@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#############################################
+#
+#	TBSS 1 
+#	Created by Corinne McGill
+#	Modified by Kayti Keith
+#	11/16/20
+#      
+#############################################
+
+
+#Pathways
+export input=/Path/to/study/Phase1/DKI/fa
+
+cd $input
+tbss_1_preproc *.nii
+echo tbss_1 complete

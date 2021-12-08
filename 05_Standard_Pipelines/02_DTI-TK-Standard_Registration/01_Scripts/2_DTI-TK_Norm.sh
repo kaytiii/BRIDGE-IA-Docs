@@ -5,28 +5,29 @@
 #    										     
 ################################################
 
-export tensors=/Users/kayti/Desktop/Projects/MIND/MIND_DTITK_allBL/03_Analysis/02_Tensors
-export ID_file_nfu=/Users/kayti/Desktop/Projects/MIND/MIND_DTITK_allBL/01_Protocols/IDs.txt
-SUBJ_IDs_nfu=$(cat $ID_file_nfu)
+export tensors=/home/kak240/Desktop/IAM_PyDesigner/03_Analysis/02_Tensors
+export ID_file=/home/kak240/Desktop/IAM_PyDesigner/IDs.txt
+SUBJ_IDs=$(cat $ID_file)
+
 mkdir $tensors
 
 # File Org
-cd /Users/kayti/Desktop/Projects/MIND/MIND_DTITK_allBL/03_Analysis/01_Tensor_Prep
+cd /home/kak240/Desktop/IAM_PyDesigner/03_Analysis/01_Tensor_Prep
 
-for ID in $SUBJ_IDs_all ; do
+for i in $SUBJ_IDs ; do 
   mv ${ID}/dti_dtitk.nii ${ID}/${ID}_dti_dtitk.nii 
 done
 
-cd /Users/kayti/Desktop/Projects/MIND/MIND_DTITK_allBL/03_Analysis/01_Tensor_Prep
+cd /home/kak240/Desktop/IAM_PyDesigner/03_Analysis/01_Tensor_Prep
 
-for ID in $SUBJ_IDs_nfu ; do
+for i in $SUBJ_IDs ; do 
   cp ${ID}/${ID}_dti_dtitk.nii  $tensors
 done
 
 # Registration
 cd $tensors
 
-ls A* > subjs.txt
+ls IAM* > subjs.txt
 
 #######################################################################################
 # Step 2: Bootstrapping

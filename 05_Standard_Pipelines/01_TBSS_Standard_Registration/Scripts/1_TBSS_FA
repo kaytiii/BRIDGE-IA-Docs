@@ -1,0 +1,11 @@
+#############################################
+#	TBSS Registration
+#	Kayti Thorn  
+#############################################
+
+export input=/Path/to/study/fa 
+
+cd $input
+tbss_1_preproc *.nii
+tbss_2_reg -T
+tbss_3_postreg -T

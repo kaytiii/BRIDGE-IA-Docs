@@ -1,0 +1,45 @@
+#############################################
+#	TBSS Non-FA
+#	Kayti Thorn    
+#############################################
+
+#### Prestats - thresholding
+export input=/Path/to/study/fa
+thr=0.2
+
+cd $input
+tbss_4_prestats $thr
+echo tbss_4 complete
+
+cd $input/FA
+gunzip *nii.gz
+
+cd $input/stats
+gunzip *nii.gz
+
+
+#### TBSS non-FA
+export preinput=/Path/to/study/fa
+export input=/Path/to/study/fa_dlt
+export output=/Path/to/study
+
+# Move files from fa folder to main folder
+mv $preinput $input
+mv $input/FA $output/FA
+mv $input/stats $output/stats
+mv $input/origdata $output/origdata
+rm -R $input
+
+# run tbss_non_fa
+cd $output
+
+tbss_non_FA dax
+tbss_non_FA dmean
+tbss_non_FA drad
+tbss_non_FA kax
+tbss_non_FA kmean
+tbss_non_FA krad
+
+cd $output/stats
+gunzip *nii.gz
+

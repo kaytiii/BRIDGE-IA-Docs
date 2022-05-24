@@ -5,47 +5,47 @@
 #    										     
 ################################################
 
-export tensors=/home/kak240/Desktop/IAM_PyDesigner/03_Analysis/02_Tensors
-export ID_file=/home/kak240/Desktop/IAM_PyDesigner/IDs.txt
-SUBJ_IDs=$(cat $ID_file)
+export base=/path/to/study
+export tensors=$base/03_Analysis/02_Tensors
+export tensorp=$base/03_Analysis/01_Tensor_Prep
+
+ids=("subj1" "subj2" "subj3")
 
 mkdir $tensors
 
-# File Org
-cd /home/kak240/Desktop/IAM_PyDesigner/03_Analysis/01_Tensor_Prep
+#######################################################################################
+# 1. File Organization
+#######################################################################################
+cd $tensorp
 
-for i in $SUBJ_IDs ; do 
-  mv ${ID}/dti_dtitk.nii ${ID}/${ID}_dti_dtitk.nii 
+for i in ${ids[@]} ; do 
+  mv ${i}/dti_dtitk.nii ${i}/${i}_dti_dtitk.nii 
 done
 
-cd /home/kak240/Desktop/IAM_PyDesigner/03_Analysis/01_Tensor_Prep
-
-for i in $SUBJ_IDs ; do 
-  cp ${ID}/${ID}_dti_dtitk.nii  $tensors
+for i in ${ids[@]} ; do 
+  cp ${i}/${i}_dti_dtitk.nii  $tensors
 done
 
-# Registration
+#######################################################################################
+# 2. Registration
+#######################################################################################
 cd $tensors
 
-ls IAM* > subjs.txt
+ls * > subjs.txt
 
-#######################################################################################
-# Step 2: Bootstrapping
-#######################################################################################
+########### Check to make sure that subjs.txt lists only actual subjects
+
+# Bootstrapping
 
 TVMean -in subjs.txt -out mean_initial.nii.gz
  
 TVResample -in mean_initial.nii.gz -align center -size 128 128 64 -vsize 1.5 1.75 2.25
 
-#######################################################################################
-# Step 3: Affine alignment
-#######################################################################################
+# Affine alignment
 
 dti_affine_population mean_initial.nii.gz subjs.txt EDS 3
 
-#######################################################################################
-# Step 4: Deformable alignment
-#######################################################################################
+# Deformable alignment
 
 TVtool -in mean_affine3.nii.gz -tr
 

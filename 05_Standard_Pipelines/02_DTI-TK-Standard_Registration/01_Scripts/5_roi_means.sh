@@ -6,103 +6,112 @@
 #      
 #############################################
 
-export a4ds=/Users/kayti/Desktop/Projects/IAM/DTI-TK-TBSS/03_Analysis/03_TBSS/stats
-export output=/Users/kayti/Desktop/Projects/IAM/DTI-TK-TBSS/03_Analysis/05_Means
-export input=/Users/kayti/Desktop/Projects/IAM/DTI-TK-TBSS/03_Analysis
-export skelroipath=$input/04_ROI_Warps/ROIs_skele
-export roipath=$input/04_ROI_Warps
+export base=/path/to/study
+export roiwarps=$ana/04_ROI_Warps
+export stats=$base/03_Analysis/03_TBSS/stats
+export output=$base/03_Analysis/05_Means
+export skelroipath=$base/03_Analysis/04_ROI_Warps/ROIs_skele
+export roipath=$base/03_Analysis/04_ROI_Warps
+export final=$base/03_Analysis/05_Means
+
+dmets=("dti_ad" "dti_rd" "dti_md" "dti_fa" "dki_ak" "dki_rk" "dki_mk")
+wmmets=("wmti_eas_rd" "wmti_awf")
+rois=("Accumb" "Amyg" "Body_cc" "CST_Comb" "Cauda" "Cere_ped_Comb" "Cing_hippo" "Fornix_cres_Comb" "Genu_cc" "Hippo" "Pal" "Post_Limb_Int_Cap_Comb" "Put" "SLF_Comb" "Sag_Str_Comb" "Splen_cc" "Sup_Fr_Occ_F_Comb" "Thal" "Unc_Fas_Comb")
 
 mkdir $skelroipath
 mkdir $output
 mkdir $output/Skele
 mkdir $output/Non-Skele
 
-######### ROI skele masking - for skeletonized means
-fslmaths $a4ds/all_dti_fa_skeletonised.nii.gz -Tmean -bin $a4ds/dki_skeleton_mask.nii
-fslmaths $a4ds/all_wmti_awf_skeletonised.nii.gz -Tmean -bin $a4ds/wmm_skeleton_mask.nii
-gunzip $a4ds/*
+#######################################################################################
+# 1. Skeletonize ROIs
+#######################################################################################
+fslmaths $stats/all_dti_fa_skeletonised.nii.gz -Tmean -bin $stats/dki_skeleton_mask.nii
+fslmaths $stats/all_wmti_awf_skeletonised.nii.gz -Tmean -bin $stats/wmm_skeleton_mask.nii
+gunzip $stats/*
 
-for rois in Accumb Amyg Body_cc CST_Comb Cauda Cere_ped_Comb Cing_hippo Fornix_cres_Comb Genu_cc Hippo Pal Post_Limb_Int_Cap_Comb Put SLF_Comb Sag_Str_Comb Splen_cc Sup_Fr_Occ_F_Comb Thal Unc_Fas_Comb ; do
-  fslmaths $roipath/${rois}.nii -mul $a4ds/dki_skeleton_mask.nii $skelroipath/${rois}.nii 
-  fslmaths $roipath/${rois}.nii -mul $a4ds/wmm_skeleton_mask.nii $skelroipath/${rois}_wmm.nii
+for r in ${rois[@]} ; do
+  fslmaths $roipath/${r}.nii -mul $stats/dki_skeleton_mask.nii $skelroipath/${r}.nii 
+  fslmaths $roipath/${r}.nii -mul $stats/wmm_skeleton_mask.nii $skelroipath/${r}_wm.nii
 done
 
-rm $a4ds/dki_skeleton_mask.nii
-rm $a4ds/wmm_skeleton_mask.nii
+rm $stats/dki_skeleton_mask.nii
+rm $stats/wmm_skeleton_mask.nii
 
 gunzip $skelroipath/*
 
-
+#######################################################################################
+# 2. Calculate ROI means
+#######################################################################################
 ### non-skele
-for metrics in dti_ad dki_ak dti_fa dti_md dki_mk dti_rd dki_rk wmti_awf wmti_eas_ad wmti_eas_rd wmti_eas_tort wmti_ias_da ; do
-  for rois in Accumb Amyg Body_cc CST_Comb Cauda Cere_ped_Comb Cing_hippo Fornix_cres_Comb Genu_cc Hippo Pal Post_Limb_Int_Cap_Comb Put SLF_Comb Sag_Str_Comb Splen_cc Sup_Fr_Occ_F_Comb Thal Unc_Fas_Comb ; do
-    fslmeants -i $a4ds/all_${metrics}.nii.gz -o $output/Non-Skele/${metrics}_${rois}.txt -m $roipath/${rois}.nii
+for m in ${dmets[@]} ; do
+  for r in ${rois[@]} ; do
+    fslmeants -i $stats/all_${m}.nii.gz -o $output/Non-Skele/${m}_${r}.txt -m $roipath/${r}.nii
   done
 done
 
+for m in ${wmmets[@]} ; do
+  for r in ${rois[@]} ; do
+    fslmeants -i $stats/all_${m}.nii.gz -o $output/Non-Skele/${m}_${r}.txt -m $roipath/${r}.nii
+  done
+done
 
 ### skele - DKI
-for metrics in dti_ad dki_ak dti_fa dti_md dki_mk dti_rd dki_rk ; do
-  for rois in Accumb Amyg Body_cc CST_Comb Cauda Cere_ped_Comb Cing_hippo Fornix_cres_Comb Genu_cc Hippo Pal Post_Limb_Int_Cap_Comb Put SLF_Comb Sag_Str_Comb Splen_cc Sup_Fr_Occ_F_Comb Thal Unc_Fas_Comb ; do
-    fslmeants -i $a4ds/all_${metrics}_skeletonised.nii.gz -o $output/Skele/${metrics}_${rois}_skele.txt -m $skelroipath/${rois}.nii
+for m in ${dmets[@]} ; do
+  for r in ${rois[@]} ; do
+    fslmeants -i $stats/all_${m}_skeletonised.nii.gz -o $output/Skele/${m}_${r}_skele.txt -m $skelroipath/${r}.nii
   done
 done
 
 
 ### skele - WMM
-for metrics in wmti_awf wmti_eas_ad wmti_eas_rd wmti_eas_tort wmti_ias_da ; do
-  for rois in Accumb Amyg Body_cc CST_Comb Cauda Cere_ped_Comb Cing_hippo Fornix_cres_Comb Genu_cc Hippo Pal Post_Limb_Int_Cap_Comb Put SLF_Comb Sag_Str_Comb Splen_cc Sup_Fr_Occ_F_Comb Thal Unc_Fas_Comb ; do
-    fslmeants -i $a4ds/all_${metrics}_skeletonised.nii.gz -o $output/Skele/${metrics}_${rois}_skele.txt -m $skelroipath/${rois}_wmm.nii
+for m in ${wmmets[@]} ; do
+  for r in ${rois[@]} ; do
+    fslmeants -i $stats/all_${m}_skeletonised.nii.gz -o $output/Skele/${m}_${r}_skele.txt -m $skelroipath/${r}_wm.nii
   done
 done
 
-
-\
-
-
 ####### Combining
-export final=/Users/kayti/Desktop/Projects/IAM/DTI-TK-TBSS/03_Analysis/05_Means/
-export ID_files=/Users/kayti/Desktop/Projects/IAM/DTI-TK-TBSS/01_Protocols/IDs.txt
-
 mkdir $final/Combined
 
 # Comb - non-skele
 export base=$final/Non-Skele
 
-echo "Accumb Amyg Body_cc CST_Comb Cauda Cere_ped_Comb Cing_hippo Fornix_cres_Comb Genu_cc Hippo Pal Post_Limb_Int_Cap_Comb Put SLF_Comb Sag_Str_Comb Splen_cc Sup_Fr_Occ_F_Comb Thal Unc_Fas_Comb" > $base/_ROI_Labels.txt
+echo ${rois[@]} > $base/_ROI_Labels.txt
 
-for metrics in dti_ad dki_ak dti_fa dti_md dki_mk dti_rd dki_rk wmti_awf wmti_eas_ad wmti_eas_rd wmti_eas_tort wmti_ias_da ; do
-  paste $base/${metrics}* > $base/All_${metrics}.txt
-  cat $base/_ROI_Labels.txt $base/All_${metrics}.txt > $final/Combined/All_${metrics}.txt
+for m in ${mets[@]} ; do
+  paste $base/${m}* > $base/All_${m}.txt
+  cat $base/_ROI_Labels.txt $base/All_${m}.txt > $final/Combined/All_${m}.txt
 done
     
 # Comb - skele
 export base=$final/Skele
 
-echo "Accumb Amyg Body_cc CST_Comb Cauda Cere_ped_Comb Cing_hippo Fornix_cres_Comb Genu_cc Hippo Pal Post_Limb_Int_Cap_Comb Put SLF_Comb Sag_Str_Comb Splen_cc Sup_Fr_Occ_F_Comb Thal Unc_Fas_Comb" > $base/_ROI_Labels.txt
+echo ${rois[@]} > $base/_ROI_Labels.txt
 
-for metrics in dti_ad dki_ak dti_fa dti_md dki_mk dti_rd dki_rk wmti_awf wmti_eas_ad wmti_eas_rd wmti_eas_tort wmti_ias_da ; do
-  paste $base/${metrics}* > $base/All_${metrics}.txt
-  cat $base/_ROI_Labels.txt $base/All_${metrics}.txt > $final/Combined/All_${metrics}_skele.txt
+for m in ${mets[@]} ; do
+  paste $base/${m}* > $base/All_${m}.txt
+  cat $base/_ROI_Labels.txt $base/All_${m}.txt > $final/Combined/All_${m}_skele.txt
 done
 
 # Comb - all
 export base=$final/Combined
 
-for metrics in dti_ad dki_ak dti_fa dti_md dki_mk dti_rd dki_rk wmti_awf wmti_eas_ad wmti_eas_rd wmti_eas_tort wmti_ias_da ; do
-  paste $base/All_${metrics}* > $base/${metrics}.txt
+for m in ${mets[@]} ; do
+  paste $base/All_${m}* > $base/${m}.txt
 done
 
-for metrics in dti_ad dki_ak dti_fa dti_md dki_mk dti_rd dki_rk wmti_awf wmti_eas_ad wmti_eas_rd wmti_eas_tort wmti_ias_da ; do
-  rm $base/All_${metrics}*
+for m in ${mets[@]} ; do
+  rm $base/All_${m}*
 done
 
 # Add ID labels
-xargs -n1 < $ID_files > $final/Combined/_IDs.txt
+ls $base/03_Analysis/01_Scalar_Prep > $final/Combined/IDs.txt
+xargs -n1 < $final/Combined/IDs.txt > $final/Combined/_IDs.txt
 
-for metrics in dti_ad dki_ak dti_fa dti_md dki_mk dti_rd dki_rk wmti_awf wmti_eas_ad wmti_eas_rd wmti_eas_tort wmti_ias_da ; do
-  paste $final/Combined/_IDs.txt $final/Combined/${metrics}.txt > $final/Combined/All_${metrics}.txt
-  rm $final/Combined/${metrics}.txt
+for m in ${mets[@]} ; do
+  paste $final/Combined/_IDs.txt $final/Combined/${m}.txt > $final/Combined/All_${m}.txt
+  rm $final/Combined/${m}.txt
 done
 
 rm $final/Combined/_IDs.txt

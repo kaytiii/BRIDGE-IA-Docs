@@ -6,11 +6,13 @@
 #     registration ('Tensor_Prep') and one folder in which I do the registration itself
 #     ('Registration').
 
+ids=("subj1" "subj2" "subj3")
+
 mkdir Tensor_Prep
 mkdir Registration
 
 # Tensor Preparation 
-for i in Subj1 Subj2 Subj3 ; do
+for i in ${ids[@]} ; do
   mkdir Tensor_Prep/${i}
   bet preprocessed_B0.nii preprocessed_B0_ss.nii -f 0.2 -m # Creates a skull stripped diffusion space mask for next step
   gunzip preprocessed_B0_ss_mask.nii.gz # Unzips mask

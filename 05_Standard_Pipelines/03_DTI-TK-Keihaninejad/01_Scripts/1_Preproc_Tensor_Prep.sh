@@ -1,35 +1,27 @@
 ##################################################
 #
 # Prep Processed Tensors for DTI-TK Registration
-# Kayti Keith - 11/10/20
+# Kayti Thorn - 11/10/20
 #
 ##################################################
+export base=/path/to/study
+export pyd=$base/path/to/pydesigner/outputs
+export tensorp=$base/03_Analysis/01_Tensor_Prep
+export thr=0.4
 
-export base=/Path/to/study
+ids=("subj1" "subj2" "subj3")
+
 mkdir $base/03_Analysis
-mkdir $base/03_Analysis/01_Tensor_Prep
-export ID_file=/Path/to/ID_file/IDs.txt
-
-SUBJ_IDs=$(cat $ID_file)
+mkdir $tensorp
 
 ##########################################
 # 1. After preprocessing file organization
 ##########################################
 
-for ID in $SUBJ_IDs ; do
-  mkdir $base/03_Analysis/01_Tensor_Prep/${ID}
-  cp $base/Preprocessed_Files/${ID}/4d.nii $base/03_Analysis/01_Tensor_Prep/${ID}/dwi_preprocessed.nii
-  for ft in bvec bval nii ; do
-    cp $base/02_Data/01_DKE/${ID}/dwi_preprocessed.${ft} $base/03_Analysis/01_Tensor_Prep/${ID}/dwi_preprocessed.${ft}
-  done
-done
-
-rm $base/03_Analysis/01_Tensor_Prep/*/*30dir*
-
-for ID in $SUBJ_IDs ; do
-  for ft in bvec bval ; do
-    mv $base/03_Analysis/01_Tensor_Prep/${ID}/DKI1_2.5mm_15cm.${ft} $base/03_Analysis/01_Tensor_Prep/${ID}/dwi_preprocessed.${ft}
-    mv $base/03_Analysis/01_Tensor_Prep/${ID}/DKI_BIPOLAR_2.5mm_64dir_Trio.${ft} $base/03_Analysis/01_Tensor_Prep/${ID}/dwi_preprocessed.${ft}
+for i in ${ids[@]} ; do 
+  mkdir $tensorp/${i}
+  for ft in nii bvec bval nii ; do
+    cp $pyd/${i}/dwi_preprocessed.${ft} $tensorp/${i}/dwi_preprocessed.${ft}
   done
 done
 
@@ -37,49 +29,50 @@ done
 # 2. BET and BET QC
 ##########################################
 
-export tensors=$base/03_Analysis/01_Tensor_Prep
-for ID in $SUBJ_IDs ; do
-  bet $tensors/${ID}/dwi_preprocessed.nii $tensors/${ID}/dwi_preprocessed_bet.nii -f 0.75
-  fslmaths $tensors/${ID}/dwi_preprocessed_bet.nii -bin $tensors/${ID}/dwi_preprocessed_mask.nii
+for i in ${ids[@]} ; do 
+  bet $tensorp/${i}/dwi_preprocessed.nii $tensorp/${i}/dwi_preprocessed_bet.nii -f $thr
+  fslmaths $tensorp/${i}/dwi_preprocessed_bet.nii -bin $tensorp/${i}/dwi_preprocessed_mask.nii
 done
-
-gunzip $tensors/*/*.nii.gz
 
 # 2.a QC BET
-mkdir $tensors/BET_QC
-for ID in $SUBJ_IDs ; do
-  cp $tensors/${ID}/dwi_preprocessed_bet.nii $tensors/BET_QC/${ID}_dwi_preprocessed_bet.nii
-  cp $tensors/${ID}/dwi_preprocessed_mask.nii $tensors/BET_QC/${ID}_dwi_preprocessed_mask.nii
+mkdir $tensorp/BET_QC
+for i in ${ids[@]} ; do 
+  cp $tensorp/${i}/dwi_preprocessed_bet.nii.gz $tensorp/BET_QC/${i}_dwi_preprocessed_bet.nii.gz
+  cp $tensorp/${i}/dwi_preprocessed_mask.nii.gz $tensorp/BET_QC/${i}_dwi_preprocessed_mask.nii.gz
 done
 
+############# QC BET outputs and rerun if need be; change threshold (thr) above if need be
+
+gunzip $tensorp/*/*.nii.gz
+
 # 2.b Delete BET_QC folder if desired
-rm -r $tensors/BET_QC
+rm -r $tensorp/BET_QC
 
 ##########################################
 # 3. Skull Stripped Tensor Prep
 ##########################################
 
 # 3.a dtifit
-export tensors=$base/03_Analysis/01_Tensor_Prep
-for ID in $SUBJ_IDs ; do
-  dtifit --data=$tensors/${ID}/dwi_preprocessed.nii --out=$tensors/${ID}/dti --mask=$tensors/${ID}/dwi_preprocessed_mask.nii --bvecs=$tensors/${ID}/dwi_preprocessed.bvec --bvals=$tensors/${ID}/dwi_preprocessed.bval --save_tensor
+for i in ${ids[@]} ; do 
+  dtifit --data=$tensorp/${i}/dwi_preprocessed.nii --out=$tensorp/${i}/dti --mask=$tensorp/${i}/dwi_preprocessed_mask.nii --bvecs=$tensorp/${i}/dwi_preprocessed.bvec --bvals=$tensorp/${i}/dwi_preprocessed.bval --save_tensor
 done
 
 
 # 3.b fsl_to_dtitk
-for ID in $SUBJ_IDs ; do
-  cd $base/03_Analysis/01_Tensor_Prep/${ID}/
+for i in ${ids[@]} ; do 
+  cd $tensorp/${i}/
   fsl_to_dtitk dti
 done
 
-gunzip $tensors/*/*.nii.gz 
+gunzip $tensorp/*/*.nii.gz 
+
 
 ##########################################
 # 4. Delete extraneous files
 ##########################################
 
-for ID in $SUBJ_IDs ; do
+for i in ${ids[@]} ; do 
   for f in L1 L2 L3 MD MO S0 V1 V2 V3 FA ; do
-    rm $tensors/${ID}/dti_${f}.nii*
+    rm $tensorp/${i}/dti_${f}.nii*
   done
 done

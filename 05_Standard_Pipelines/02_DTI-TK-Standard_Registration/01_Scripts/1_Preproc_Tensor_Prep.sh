@@ -1,7 +1,7 @@
 ##################################################
 #
 # Prep Processed Tensors for DTI-TK Registration
-# Kayti Keith - 11/10/20
+# Kayti Thorn - 11/10/20
 #
 ##################################################
 export base=/path/to/study

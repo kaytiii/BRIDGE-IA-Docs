@@ -1,7 +1,7 @@
 ################################################
 #    										     
 # DTI-TK Spatial Normalization Prep for TBSS   
-# Kayti Keith - 11/10/20				 
+# Kayti Thorn - 11/10/20				 
 #    										     
 ################################################
 
@@ -23,7 +23,7 @@ for i in ${ids[@]} ; do
 done
 
 for i in ${ids[@]} ; do 
-  cp ${i}/${i}_dti_dtitk.nii  $tensors
+  cp ${i}/${i}_dti_dtitk.nii $tensors
 done
 
 #######################################################################################
